@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/models/app_models.dart';
 import '../../core/providers.dart';
 import '../../core/widgets/section_card.dart';
 
@@ -12,14 +13,9 @@ class StatsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsControllerProvider);
-    final weeklyMinutes = [58.0, 62.0, 45.0, 70.0, 84.0, 90.0, 76.0];
-    final appMinutes = [
-      ('Instagram', 95.0),
-      ('YouTube', 120.0),
-      ('WhatsApp', 28.0),
-      ('Maps', 12.0),
-      ('Email', 15.0),
-    ];
+    final weeklyMinutes = _weeklyTrend(settings.focusedMinutesThisWeek);
+    final appMinutes = _appUsageBreakdown(settings);
+    final badges = _milestoneBadges(settings.currentStreakDays);
 
     return CustomScrollView(
       slivers: [
@@ -98,6 +94,18 @@ class StatsScreen extends ConsumerWidget {
                   ),
                 ],
               ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: _SummaryTile(title: 'Current streak', value: '${settings.currentStreakDays} days'),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: _SummaryTile(title: 'Schedules', value: '${settings.scheduledWindows.length}'),
+                  ),
+                ],
+              ),
               const SizedBox(height: 16),
               SectionCard(
                 child: Column(
@@ -153,11 +161,64 @@ class StatsScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: 16),
+              SectionCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Milestones', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 12),
+                    if (badges.isEmpty)
+                      const Text('Keep going. Your first milestone badge will appear soon.')
+                    else
+                      Wrap(
+                        spacing: 10,
+                        runSpacing: 10,
+                        children: badges
+                            .map(
+                              (badge) => Chip(
+                                avatar: const Icon(Icons.workspace_premium_rounded, size: 18),
+                                label: Text(badge),
+                              ),
+                            )
+                            .toList(),
+                      ),
+                  ],
+                ),
+              ),
             ]),
           ),
         ),
       ],
     );
+  }
+
+  List<double> _weeklyTrend(int focusedMinutesThisWeek) {
+    final baseline = [58.0, 62.0, 45.0, 70.0, 84.0, 90.0, 76.0];
+    final adjustment = focusedMinutesThisWeek / 40.0;
+    return List<double>.generate(baseline.length, (index) => baseline[index] + adjustment);
+  }
+
+  List<(String, double)> _appUsageBreakdown(AppSettings settings) {
+    final blockedImpact = (settings.blockedApps.length * 18).toDouble();
+    final allowedBase = [
+      ('WhatsApp', 28.0),
+      ('Maps', 12.0),
+      ('Email', 15.0),
+    ];
+    return [
+      ('Instagram', 95.0 - blockedImpact),
+      ('YouTube', 120.0 - blockedImpact),
+      ...allowedBase,
+    ].map((entry) => (entry.$1, entry.$2.clamp(0, 180))).toList();
+  }
+
+  List<String> _milestoneBadges(int streakDays) {
+    final badges = <String>[];
+    if (streakDays >= 3) badges.add('3-day streak');
+    if (streakDays >= 7) badges.add('7-day streak');
+    if (streakDays >= 30) badges.add('30-day streak');
+    return badges;
   }
 }
 

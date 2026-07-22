@@ -51,6 +51,21 @@ class ScheduledBlockWindow {
   final bool enabled;
   final bool strictMode;
 
+  bool get isOvernight => endMinutes <= startMinutes;
+
+  String get timeLabel => '${_formatMinutes(startMinutes)} - ${_formatMinutes(endMinutes)}';
+
+  String get weekdayLabel {
+    const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    if (weekdays.length == 7) {
+      return 'Every day';
+    }
+    if (weekdays.length == 5 && weekdays.containsAll([1, 2, 3, 4, 5])) {
+      return 'Weekdays';
+    }
+    return weekdays.map((day) => labels[day - 1]).join(', ');
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
@@ -71,6 +86,14 @@ class ScheduledBlockWindow {
       enabled: json['enabled'] as bool? ?? true,
       strictMode: json['strictMode'] as bool? ?? false,
     );
+  }
+
+  static String _formatMinutes(int minutes) {
+    final hours = minutes ~/ 60;
+    final mins = minutes % 60;
+    final period = hours >= 12 ? 'PM' : 'AM';
+    final displayHour = hours % 12 == 0 ? 12 : hours % 12;
+    return '$displayHour:${mins.toString().padLeft(2, '0')} $period';
   }
 }
 
