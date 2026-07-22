@@ -1,0 +1,30 @@
+import java.util.Properties
+
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = new File(rootProject.projectDir, 'local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withInputStream { localProperties.load(it) }
+}
+
+def flutterSdkPath = localProperties.getProperty('flutter.sdk')
+assert flutterSdkPath != null : 'flutter.sdk not set in local.properties'
+
+apply from: "$flutterSdkPath/packages/flutter_tools/gradle/app_plugin_loader.gradle"
+
+include ':app'

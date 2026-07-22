@@ -47,6 +47,41 @@ class NativePlatformService {
     }
   }
 
+  Future<void> updateSessionState({
+    required bool active,
+    required bool strictMode,
+    required bool untilStopped,
+    required int durationMinutes,
+    required int elapsedSeconds,
+    required String message,
+    required int startedAtMillis,
+  }) async {
+    try {
+      await _channel.invokeMethod<void>(
+        'updateSessionState',
+        jsonEncode({
+          'active': active,
+          'strictMode': strictMode,
+          'untilStopped': untilStopped,
+          'durationMinutes': durationMinutes,
+          'elapsedSeconds': elapsedSeconds,
+          'message': message,
+          'startedAtMillis': startedAtMillis,
+        }),
+      );
+    } on MissingPluginException {
+      return;
+    }
+  }
+
+  Future<void> clearSessionState() async {
+    try {
+      await _channel.invokeMethod<void>('clearSessionState');
+    } on MissingPluginException {
+      return;
+    }
+  }
+
   Future<void> openUsageAccessSettings() async => _invokeVoid('openUsageAccessSettings');
   Future<void> openAccessibilitySettings() async => _invokeVoid('openAccessibilitySettings');
   Future<void> openOverlaySettings() async => _invokeVoid('openOverlaySettings');

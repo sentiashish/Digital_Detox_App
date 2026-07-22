@@ -106,6 +106,15 @@ class FocusSessionController extends StateNotifier<FocusSessionState> {
       startedAt: DateTime.now(),
     );
     await NativePlatformService.instance.persistBlockingConfiguration(_settingsController.state);
+    await NativePlatformService.instance.updateSessionState(
+      active: true,
+      strictMode: plan.strictMode,
+      untilStopped: plan.untilStopped,
+      durationMinutes: plan.duration.inMinutes,
+      elapsedSeconds: 0,
+      message: state.currentMessage,
+      startedAtMillis: state.startedAt!.millisecondsSinceEpoch,
+    );
     _timer?.cancel();
     _timer = Timer.periodic(const Duration(seconds: 1), _tick);
   }
@@ -121,6 +130,7 @@ class FocusSessionController extends StateNotifier<FocusSessionState> {
     _timer = null;
     final finishedState = state;
     state = FocusSessionState.idle();
+    await NativePlatformService.instance.clearSessionState();
     if (completed) {
       await _settingsController.recordCompletedSession(finishedState.duration);
       await NotificationService.instance.showSessionComplete(minutes: finishedState.duration.inMinutes);
@@ -139,6 +149,17 @@ class FocusSessionController extends StateNotifier<FocusSessionState> {
       return;
     }
     state = state.copyWith(elapsed: elapsed);
+    unawaited(
+      NativePlatformService.instance.updateSessionState(
+        active: true,
+        strictMode: state.strictMode,
+        untilStopped: state.untilStopped,
+        durationMinutes: state.duration.inMinutes,
+        elapsedSeconds: elapsed.inSeconds,
+        message: state.currentMessage,
+        startedAtMillis: state.startedAt?.millisecondsSinceEpoch ?? DateTime.now().millisecondsSinceEpoch,
+      ),
+    );
   }
 
   @override
