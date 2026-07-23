@@ -56,9 +56,7 @@ lib/
 - OEM battery optimizers may still require manual exclusion.
 - Background scheduling must be tested on each target device family.
 
-## Screenshots
 
-Placeholder section for store screenshots.
 
 
 
