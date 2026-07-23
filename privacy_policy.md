@@ -1,6 +1,6 @@
 # Focus Mode Privacy Policy
 
-Effective date: 2026-07-20
+Effective date: 2026-07-23
 
 Focus Mode is designed to keep all behavioral data on the device. The app does not sell, transmit, or share personal data with third parties.
 

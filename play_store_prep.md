@@ -3,7 +3,9 @@
 ## Listing draft
 
 Short description:
-Block distractions. Stay focused. Keep the apps that matter.
+Block distractions. 
+Stay focused. 
+Keep the apps that matter.
 
 Full description:
 
