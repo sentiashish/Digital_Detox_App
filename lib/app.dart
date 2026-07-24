@@ -23,6 +23,7 @@ class FocusModeApp extends ConsumerWidget {
       routes: {
         BlockingOverlayScreen.routeName: (_) => const BlockingOverlayScreen(),
       },
+      
       home: settings.onboardingComplete ? const AppShell() : const OnboardingFlow(),
     );
   }

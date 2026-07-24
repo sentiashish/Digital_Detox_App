@@ -12,7 +12,7 @@ Focus Mode is designed to keep all behavioral data on the device. The app does n
 - Scheduled block windows
 - Notification preferences
 
-## Android permissions used
+## Android Permissions used
 
 - Usage Access: used to detect which app is currently in the foreground so distracting apps can be blocked during focus periods.
 - Accessibility Service: used only to detect foreground app changes and trigger the local blocking screen when a restricted app is opened.
@@ -20,7 +20,7 @@ Focus Mode is designed to keep all behavioral data on the device. The app does n
 - Notifications: used for focus reminders and session completion alerts.
 - Battery optimization exemption: requested so scheduled blocking can keep running reliably on some devices.
 
-## Data retention
+## Data Retention
 
 All data remains on the device unless the user deletes the app or clears its storage.
 
