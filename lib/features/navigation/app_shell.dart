@@ -15,8 +15,9 @@ class _AppShellState extends State<AppShell> {
   int _index = 0;
 
   @override
-  Widget build(BuildContext context) {
-    final pages = [
+  Widget build (BuildContext context) {
+    final pages = 
+    [
       const HomeScreen(),
       const StatsScreen(),
       const SettingsScreen(),
