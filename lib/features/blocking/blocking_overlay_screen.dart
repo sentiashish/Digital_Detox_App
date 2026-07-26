@@ -14,7 +14,6 @@ class BlockingOverlayScreen extends ConsumerStatefulWidget {
   @override
   ConsumerState<BlockingOverlayScreen> createState() => _BlockingOverlayScreenState();
 }
-
 class _BlockingOverlayScreenState extends ConsumerState<BlockingOverlayScreen> {
   final TextEditingController _controller = TextEditingController();
   String _message = motivationMessages.first;
@@ -80,6 +79,7 @@ class _BlockingOverlayScreenState extends ConsumerState<BlockingOverlayScreen> {
                               onChanged: (_) => setState(() {}),
                               decoration: const InputDecoration(hintText: 'Type here'),
                             ),
+                            
                             const SizedBox(height: 12),
                             SizedBox(
                               width: double.infinity,
