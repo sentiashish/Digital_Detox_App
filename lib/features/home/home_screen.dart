@@ -63,6 +63,22 @@ class HomeScreen extends ConsumerWidget {
                 ),
               ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.08),
               const SizedBox(height: 16),
+              SectionCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Motivation', style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(height: 8),
+                    Text(session.currentMessage),
+                    const SizedBox(height: 8),
+                    Text(
+                      session.active ? 'Session running now' : 'No session active right now',
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
               if (session.active)
                 SectionCard(
                   child: Column(

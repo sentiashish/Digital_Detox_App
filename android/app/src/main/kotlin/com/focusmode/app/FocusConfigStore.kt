@@ -22,6 +22,7 @@ class FocusConfigStore(private val context: Context) {
         prefs.edit()
             .putStringSet(BLOCKED_PACKAGES_KEY, extractPackages(root, "blockedApps"))
             .putStringSet(ALLOWED_PACKAGES_KEY, extractPackages(root, "allowedApps"))
+            .putString(SCHEDULE_WINDOWS_JSON_KEY, root.optJSONArray("scheduledWindows")?.toString() ?: "[]")
             .putBoolean(DEFAULT_STRICT_KEY, root.optBoolean("defaultStrictMode", false))
             .apply()
     }
@@ -51,16 +52,58 @@ class FocusConfigStore(private val context: Context) {
             .apply()
     }
 
+    fun setScheduleState(active: Boolean, strictMode: Boolean, title: String) {
+        prefs.edit()
+            .putBoolean(SCHEDULE_ACTIVE_KEY, active)
+            .putBoolean(SCHEDULE_STRICT_KEY, strictMode)
+            .putString(SCHEDULE_TITLE_KEY, title)
+            .apply()
+    }
+
+    fun getScheduledWindows(): List<ScheduledWindowRecord> {
+        val raw = prefs.getString(SCHEDULE_WINDOWS_JSON_KEY, "[]") ?: "[]"
+        val result = mutableListOf<ScheduledWindowRecord>()
+        val array = JSONArray(raw)
+        for (index in 0 until array.length()) {
+            val window = array.optJSONObject(index) ?: continue
+            result.add(
+                ScheduledWindowRecord(
+                    id = window.optString("id", ""),
+                    title = window.optString("title", "Scheduled block"),
+                    startMinutes = window.optInt("startMinutes", 0),
+                    endMinutes = window.optInt("endMinutes", 0),
+                    weekdays = extractWeekdays(window.optJSONArray("weekdays")),
+                    enabled = window.optBoolean("enabled", true),
+                    strictMode = window.optBoolean("strictMode", false),
+                ),
+            )
+        }
+        return result
+    }
+
     fun isSessionActive(): Boolean = prefs.getBoolean(SESSION_ACTIVE_KEY, false)
-    fun isStrictModeActive(): Boolean = prefs.getBoolean(SESSION_STRICT_KEY, prefs.getBoolean(DEFAULT_STRICT_KEY, false))
+    fun isScheduleActive(): Boolean = prefs.getBoolean(SCHEDULE_ACTIVE_KEY, false)
+    fun isStrictModeActive(): Boolean {
+        return prefs.getBoolean(SESSION_STRICT_KEY, prefs.getBoolean(SCHEDULE_STRICT_KEY, prefs.getBoolean(DEFAULT_STRICT_KEY, false)))
+    }
     fun isUntilStopped(): Boolean = prefs.getBoolean(SESSION_UNTIL_STOPPED_KEY, false)
     fun getSessionDurationMinutes(): Int = prefs.getInt(SESSION_DURATION_KEY, 0)
     fun getSessionElapsedSeconds(): Int = prefs.getInt(SESSION_ELAPSED_KEY, 0)
     fun getSessionMessage(): String = prefs.getString(SESSION_MESSAGE_KEY, "Ready when you are.") ?: "Ready when you are."
     fun getSessionStartedMillis(): Long = prefs.getLong(SESSION_STARTED_KEY, 0L)
+    fun getScheduleTitle(): String = prefs.getString(SCHEDULE_TITLE_KEY, "Scheduled block") ?: "Scheduled block"
+    fun getBlockingMessage(): String {
+        return if (isSessionActive()) {
+            getSessionMessage()
+        } else if (isScheduleActive()) {
+            "Your scheduled block is active. Take a breath and stay with your plan."
+        } else {
+            "Ready when you are."
+        }
+    }
 
     fun shouldBlock(packageName: String): Boolean {
-        if (!isSessionActive()) return false
+        if (!isSessionActive() && !isScheduleActive()) return false
         if (isAllowed(packageName)) return false
         return isBlocked(packageName)
     }
@@ -86,10 +129,26 @@ class FocusConfigStore(private val context: Context) {
         return result
     }
 
+    private fun extractWeekdays(array: JSONArray?): List<Int> {
+        val result = mutableListOf<Int>()
+        if (array == null) return result
+        for (index in 0 until array.length()) {
+            val value = array.optInt(index, 0)
+            if (value in 1..7) {
+                result.add(value)
+            }
+        }
+        return result
+    }
+
     companion object {
         private const val PREFS_NAME = "focus_mode_native"
         private const val BLOCKED_PACKAGES_KEY = "blocked_packages"
         private const val ALLOWED_PACKAGES_KEY = "allowed_packages"
+        private const val SCHEDULE_WINDOWS_JSON_KEY = "scheduled_windows_json"
+        private const val SCHEDULE_ACTIVE_KEY = "schedule_active"
+        private const val SCHEDULE_STRICT_KEY = "schedule_strict"
+        private const val SCHEDULE_TITLE_KEY = "schedule_title"
         private const val DEFAULT_STRICT_KEY = "default_strict_mode"
         private const val SESSION_ACTIVE_KEY = "session_active"
         private const val SESSION_STRICT_KEY = "session_strict"

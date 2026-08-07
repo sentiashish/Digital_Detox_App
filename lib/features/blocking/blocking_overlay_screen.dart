@@ -27,7 +27,8 @@ class _BlockingOverlayScreenState extends ConsumerState<BlockingOverlayScreen> {
   @override
   Widget build(BuildContext context) {
     final session = ref.watch(focusSessionControllerProvider);
-    final strictMode = session.strictMode || ref.watch(settingsControllerProvider).defaultStrictMode;
+    final settings = ref.watch(settingsControllerProvider);
+    final strictMode = session.strictMode || settings.defaultStrictMode;
     const unlockSentence = 'I choose focus now';
 
     return PopScope(

@@ -28,6 +28,7 @@ class FocusAccessibilityService : AccessibilityService() {
             addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             putExtra(BlockingOverlayActivity.EXTRA_PACKAGE_NAME, packageName)
             putExtra(BlockingOverlayActivity.EXTRA_APP_LABEL, event.contentDescription?.toString().orEmpty())
+            putExtra(BlockingOverlayActivity.EXTRA_CONTEXT_MESSAGE, store.getBlockingMessage())
         }
         startActivity(overlayIntent)
     }

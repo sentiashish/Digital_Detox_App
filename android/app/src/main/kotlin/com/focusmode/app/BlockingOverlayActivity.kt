@@ -24,7 +24,7 @@ class BlockingOverlayActivity : Activity() {
         val store = FocusConfigStore(this)
         val packageName = intent.getStringExtra(EXTRA_PACKAGE_NAME).orEmpty()
         val label = intent.getStringExtra(EXTRA_APP_LABEL).orEmpty().ifBlank { packageName }
-        val sessionMessage = store.getSessionMessage()
+        val sessionMessage = intent.getStringExtra(EXTRA_CONTEXT_MESSAGE).orEmpty().ifBlank { store.getSessionMessage() }
         val elapsed = store.getSessionElapsedSeconds()
         val strictMode = store.isStrictModeActive()
 
@@ -144,5 +144,6 @@ class BlockingOverlayActivity : Activity() {
     companion object {
         const val EXTRA_PACKAGE_NAME = "extra_package_name"
         const val EXTRA_APP_LABEL = "extra_app_label"
+        const val EXTRA_CONTEXT_MESSAGE = "extra_context_message"
     }
 }

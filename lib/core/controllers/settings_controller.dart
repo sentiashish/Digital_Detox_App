@@ -47,15 +47,17 @@ class SettingsController extends StateNotifier<AppSettings> {
   }
 
   Future<void> addScheduleWindow(ScheduledBlockWindow window) async {
-    await _save(state.copyWith(scheduledWindows: [...state.scheduledWindows, window]));
+    final next = state.copyWith(scheduledWindows: [...state.scheduledWindows, window]);
+    await _save(next);
+    await NativePlatformService.instance.persistBlockingConfiguration(next);
   }
 
   Future<void> removeScheduleWindow(String id) async {
-    await _save(
-      state.copyWith(
-        scheduledWindows: state.scheduledWindows.where((window) => window.id != id).toList(),
-      ),
+    final next = state.copyWith(
+      scheduledWindows: state.scheduledWindows.where((window) => window.id != id).toList(),
     );
+    await _save(next);
+    await NativePlatformService.instance.persistBlockingConfiguration(next);
   }
 
   Future<void> recordCompletedSession(Duration duration) async {

@@ -23,6 +23,7 @@ class MainActivity : FlutterActivity() {
                 "configureBlocking" -> {
                     val configJson = call.arguments as? String ?: "{}"
                     FocusConfigStore(this).saveBlockingConfiguration(configJson)
+                    ScheduleManager.refresh(this)
                     result.success(null)
                 }
                 "updateSessionState" -> {

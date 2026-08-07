@@ -203,6 +203,7 @@ class _ScheduleComposerSheetState extends State<_ScheduleComposerSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final weekdayLabels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     return SafeArea(
       child: Padding(
         padding: EdgeInsets.fromLTRB(20, 0, 20, 20 + MediaQuery.of(context).viewInsets.bottom),
@@ -248,9 +249,7 @@ class _ScheduleComposerSheetState extends State<_ScheduleComposerSheet> {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: const [
-                'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
-              ].asMap().entries.map((entry) {
+              children: weekdayLabels.asMap().entries.map((entry) {
                 final dayIndex = entry.key + 1;
                 final label = entry.value;
                 return FilterChip(
