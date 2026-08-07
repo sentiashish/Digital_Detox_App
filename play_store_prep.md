@@ -36,6 +36,7 @@ Features:
 - Keep the visual language calm and uncluttered
 - Use soft blues/greens with the purple accent token already in the app
 
+
 ## Signed release build steps
 
 1. Create a keystore with `keytool`.
@@ -43,6 +44,7 @@ Features:
 3. Add signing values to `android/key.properties` locally.
 4. Configure the release signing block in `android/app/build.gradle`.
 5. Build an App Bundle with `flutter build appbundle --release`.
+
 
 ## Accessibility policy checklist
 
